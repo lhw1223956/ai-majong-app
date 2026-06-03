@@ -157,8 +157,6 @@ if app_mode == "🏆 戰局計分板":
     from ui.scoreboard import render_scoreboard_ui
     render_scoreboard_ui()
 else:
-    st.markdown('<div class="glass-card" style="padding: 16px 24px; margin-bottom: 24px;">', unsafe_allow_html=True)
-    
     header_col1, header_col2, header_col3 = st.columns([1.5, 1, 2])
     with header_col1:
         st.markdown('<div style="font-size: 18px; font-weight: 700; display: flex; align-items: center; height: 100%; color: #1E293B;">📷 影像辨識</div>', unsafe_allow_html=True)
@@ -170,8 +168,6 @@ else:
         model_choice = model_map.get(model_display, "yolov8s.pt")
         
     model = load_yolo_model(model_choice)
-    
-    st.write("") # 間距
     
     btn_col1, btn_col2, btn_col3 = st.columns(3)
     with btn_col1:
@@ -199,7 +195,6 @@ else:
                     del st.session_state[key]
             st.rerun()
             
-    st.markdown('</div>', unsafe_allow_html=True)
 
     # 渲染主介面
     render_main_ui(

@@ -24,7 +24,6 @@ def render_main_ui(mode, model_choice, flower_mode, dice_val, ppo_structured_8x3
     # 左側：牌面管理與辨識結果
     # ==========================
     with col_left:
-        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
         st.image(st.session_state.current_plot, caption=f"AI 辨識結果 ({model_choice})", use_container_width=True)
         st.markdown(f'<div class="section-header" style="margin-top: 10px;">  🎴   牌面管理 <span class="count-badge">偵測總數：{len(all_codes)} 張</span></div>', unsafe_allow_html=True)
         
@@ -200,14 +199,11 @@ def render_main_ui(mode, model_choice, flower_mode, dice_val, ppo_structured_8x3
 
             # 清空按鈕已整合至上方
                 
-        st.markdown('</div>', unsafe_allow_html=True) # End of glass-card for left column
 
     # ==========================
     # 右側：分析結果與場況設定
     # ==========================
     with col_right:
-        st.markdown('<div class="glass-card" style="background: linear-gradient(145deg, #fce7f3, #e0e7ff); border: 1px solid #e9d5ff;">', unsafe_allow_html=True)
-        
         if mode == "台數計算":
             st.markdown(f'<div class="section-header" style="margin-top: 0;">  ⚙️  場況設定</div>', unsafe_allow_html=True)
             
@@ -399,4 +395,3 @@ def render_main_ui(mode, model_choice, flower_mode, dice_val, ppo_structured_8x3
             if "ai_coach_llm_advice" in st.session_state:
                 st.markdown("### 💬 智慧教練")
                 st.chat_message("assistant").markdown(st.session_state.ai_coach_llm_advice, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True) # End of glass-card for right column
