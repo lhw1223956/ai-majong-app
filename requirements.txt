@@ -13,3 +13,4 @@ sb3-contrib
 gymnasium
 pettingzoo
 google-generativeai
+tomli

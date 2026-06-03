@@ -5,7 +5,32 @@ from core.config import TILE_INFO
 from algorithms.lyl_progress_ev_judgement import rank_discards_by_progress_ev
 
 
+def _load_gemini_api_key_from_streamlit():
+    try:
+        import streamlit as st
+
+        api_key = str(st.secrets.get("GEMINI_API_KEY", "")).strip()
+        if api_key:
+            return api_key, ""
+    except Exception:
+        pass
+    return "", ""
+
+
+def _parse_toml(text):
+    try:
+        import tomllib
+    except ModuleNotFoundError:
+        import tomli as tomllib
+
+    return tomllib.loads(text)
+
+
 def _load_gemini_api_key_from_file():
+    api_key, key_error = _load_gemini_api_key_from_streamlit()
+    if api_key or key_error:
+        return api_key, key_error
+
     secrets_paths = [
         Path.cwd() / ".streamlit" / "secrets.toml",
         Path(__file__).resolve().parents[1] / ".streamlit" / "secrets.toml",
@@ -19,9 +44,7 @@ def _load_gemini_api_key_from_file():
             continue
 
         try:
-            import tomllib
-
-            data = tomllib.loads(path.read_text(encoding="utf-8-sig"))
+            data = _parse_toml(path.read_text(encoding="utf-8-sig"))
         except Exception as e:
             return "", f"⚠️ Gemini 金鑰檔案讀取失敗：`{display_path}`，錯誤：{e}"
 
