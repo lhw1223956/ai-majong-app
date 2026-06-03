@@ -1,0 +1,15 @@
+streamlit
+streamlit-lottie
+streamlit-option-menu
+pillow
+requests
+numpy
+opencv-python
+ultralytics
+torch
+torchvision
+stable-baselines3
+sb3-contrib
+gymnasium
+pettingzoo
+google-generativeai

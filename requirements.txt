@@ -1,0 +1,15 @@
+streamlit==1.45.1
+streamlit-lottie
+streamlit-option-menu
+pillow
+requests
+numpy
+opencv-python-headless
+ultralytics
+torch
+torchvision
+stable-baselines3
+sb3-contrib
+gymnasium
+pettingzoo
+google-generativeai
