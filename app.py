@@ -165,8 +165,8 @@ else:
     with header_col2:
         st.markdown('<div style="font-size: 14px; font-weight: 600; color: #ec4899; display: flex; align-items: center; justify-content: flex-end; height: 100%; padding-right: 10px;">🧠 模型</div>', unsafe_allow_html=True)
     with header_col3:
-        model_display = st.selectbox("辨識模型", ("YOLOv8s (標準)", "YOLOv8n (快速)", "YOLOv8s_obb", "YOLOv8n_obb"), label_visibility="collapsed")
-        model_map = {"YOLOv8s (標準)": "yolov8s.pt", "YOLOv8n (快速)": "yolov8n.pt", "YOLOv8s_obb": "YOLOv8s_obb.pt", "YOLOv8n_obb": "YOLOv8n_obb.pt"}
+        model_display = st.selectbox("辨識模型", ("YOLOv8s", "YOLOv8n", "YOLOv8s_obb", "YOLOv8n_obb"), label_visibility="collapsed")
+        model_map = {"YOLOv8s": "yolov8s.pt", "YOLOv8n": "yolov8n.pt", "YOLOv8s_obb": "YOLOv8s_obb.pt", "YOLOv8n_obb": "YOLOv8n_obb.pt"}
         model_choice = model_map.get(model_display, "yolov8s.pt")
         
     model = load_yolo_model(model_choice)
