@@ -139,7 +139,6 @@ def render_main_ui(mode, model_choice, flower_mode, dice_val, ppo_structured_8x3
             
             # ─── 桌面明牌區 ───
             import sys
-            from ultralytics import YOLO
             from ai.vision import load_yolo_model
             model = load_yolo_model(model_choice)
             

@@ -10,11 +10,23 @@ _DEFAULT_YOLO_CONFIG_DIR = Path(__file__).resolve().parents[1] / ".ultralytics"
 os.environ.setdefault("YOLO_CONFIG_DIR", str(_DEFAULT_YOLO_CONFIG_DIR))
 _DEFAULT_YOLO_CONFIG_DIR.mkdir(parents=True, exist_ok=True)
 
-from ultralytics import YOLO
 from core.config import TILE_INFO
+
+
+def _load_yolo_class():
+    try:
+        from ultralytics import YOLO
+        return YOLO, ""
+    except Exception as e:
+        return None, str(e)
 
 @st.cache_resource
 def load_yolo_model(name):
+    YOLO, load_error = _load_yolo_class()
+    if YOLO is None:
+        st.error(f"影像辨識模型載入失敗：{load_error}")
+        return None
+
     folder_path = os.path.join("影像辨識模型", name)
     if os.path.exists(folder_path):
         return YOLO(folder_path)
@@ -26,6 +38,9 @@ def _prepare_image_for_yolo(image_obj):
     return image_obj.copy()
 
 def _run_yolo(model, image_obj):
+    if model is None:
+        st.warning("影像辨識模型尚未成功載入，請先確認雲端 OpenCV / Ultralytics 環境。")
+        return []
     return model(_prepare_image_for_yolo(image_obj), device="cpu", verbose=False)
 
 def process_discard_pool(image_obj, source_type, current_model_name, model):
@@ -36,6 +51,8 @@ def process_discard_pool(image_obj, source_type, current_model_name, model):
         return  # 已辨識過，跳過
     st.session_state.pool_cache_key = cache_key
     results = _run_yolo(model, image_obj)
+    if not results:
+        return
     st.session_state.pool_plot = results[0].plot()
     tile_data = []
     for r in results:
@@ -60,6 +77,9 @@ def process_detection(image_obj, source_type, current_model_name, mode, model):
         st.session_state.current_cache_key = cache_key
         st.session_state.current_image = _prepare_image_for_yolo(image_obj)
         results = _run_yolo(model, image_obj)
+        if not results:
+            st.session_state.con_manual, st.session_state.exp_manual = [], []
+            return
         st.session_state.current_plot = results[0].plot()
         tile_data = []
         for r in results:
