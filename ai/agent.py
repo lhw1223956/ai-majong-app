@@ -1,4 +1,6 @@
 import os
+import importlib
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -10,6 +12,26 @@ from core.config import CODE_TO_IDX, IDX_TO_CODE, TILE_INFO
 NUM_TILE_TYPES = 34
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MODEL_LOAD_ERRORS = {}
+
+
+def _install_numpy_pickle_aliases():
+    """Allow NumPy 2.x pickles to load on the NumPy 1.x runtime."""
+    try:
+        import numpy as _np
+
+        core_module = importlib.import_module("numpy.core")
+        sys.modules.setdefault("numpy._core", core_module)
+        if not hasattr(_np, "_core"):
+            setattr(_np, "_core", core_module)
+
+        for module_name in ("numeric", "multiarray", "fromnumeric", "umath", "_multiarray_umath"):
+            try:
+                module = importlib.import_module(f"numpy.core.{module_name}")
+            except Exception:
+                continue
+            sys.modules.setdefault(f"numpy._core.{module_name}", module)
+    except Exception:
+        pass
 
 
 def _resolve_model_path(model_path):
@@ -89,6 +111,7 @@ def _build_observation_for_model(hand_codes, exp_codes, discard_pool, ppo_model)
 
 
 def _load_maskable_model(model_path, policy_kwargs):
+    _install_numpy_pickle_aliases()
     from sb3_contrib import MaskablePPO  # type: ignore
 
     return MaskablePPO.load(
@@ -99,6 +122,7 @@ def _load_maskable_model(model_path, policy_kwargs):
 
 
 def _load_ppo_model(model_path, policy_kwargs):
+    _install_numpy_pickle_aliases()
     from stable_baselines3 import PPO  # type: ignore
     from stable_baselines3.common.buffers import RolloutBuffer  # type: ignore
     from stable_baselines3.common.policies import ActorCriticPolicy  # type: ignore
@@ -157,6 +181,7 @@ def _build_current_cnn_policy_kwargs():
 
 
 def _load_old_ppo_model(model_path):
+    _install_numpy_pickle_aliases()
     import gymnasium as gym
     import torch
     import torch.nn as nn
