@@ -1,0 +1,9 @@
+.git
+.gitignore
+__pycache__/
+*.pyc
+*.pyo
+*.log
+.streamlit/secrets.toml
+.ultralytics/
+.cache/
