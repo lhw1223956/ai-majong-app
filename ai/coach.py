@@ -5,12 +5,31 @@ from pathlib import Path
 from core.config import TILE_INFO
 from algorithms.lyl_progress_ev_judgement import rank_discards_by_progress_ev
 
+DEFAULT_GEMINI_MODEL = "gemini-3-flash-preview"
+
 
 def _load_gemini_api_key_from_env():
     api_key = str(os.environ.get("GEMINI_API_KEY", "")).strip()
     if api_key:
         return api_key, ""
     return "", ""
+
+
+def _load_gemini_model_name():
+    model_name = str(os.environ.get("GEMINI_MODEL", "")).strip()
+    if model_name:
+        return model_name
+
+    try:
+        import streamlit as st
+
+        model_name = str(st.secrets.get("GEMINI_MODEL", "")).strip()
+        if model_name:
+            return model_name
+    except Exception:
+        pass
+
+    return DEFAULT_GEMINI_MODEL
 
 
 def _load_gemini_api_key_from_streamlit():
@@ -91,8 +110,8 @@ def get_majiang_coach_advice(hand_codes, exp_codes, discard_pool=None):
         return f"⚠️ Gemini 設定失敗：{e}"
 
     try:
-        # 使用 2.5 flash 模型
-        llm_model = genai.GenerativeModel('gemini-2.5-flash')
+        # Default to Gemini 3 Flash, with optional override from GEMINI_MODEL.
+        llm_model = genai.GenerativeModel(_load_gemini_model_name())
         hand_names = sorted([f"{TILE_INFO[c]['icon']}{TILE_INFO[c]['name']}" for c in hand_codes if c in TILE_INFO])
         exp_names = [f"{TILE_INFO[c]['icon']}{TILE_INFO[c]['name']}" for c in exp_codes if c in TILE_INFO]
         
