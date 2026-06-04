@@ -1,8 +1,16 @@
 import google.generativeai as genai
 import collections
+import os
 from pathlib import Path
 from core.config import TILE_INFO
 from algorithms.lyl_progress_ev_judgement import rank_discards_by_progress_ev
+
+
+def _load_gemini_api_key_from_env():
+    api_key = str(os.environ.get("GEMINI_API_KEY", "")).strip()
+    if api_key:
+        return api_key, ""
+    return "", ""
 
 
 def _load_gemini_api_key_from_streamlit():
@@ -27,6 +35,10 @@ def _parse_toml(text):
 
 
 def _load_gemini_api_key_from_file():
+    api_key, key_error = _load_gemini_api_key_from_env()
+    if api_key or key_error:
+        return api_key, key_error
+
     api_key, key_error = _load_gemini_api_key_from_streamlit()
     if api_key or key_error:
         return api_key, key_error
@@ -55,14 +67,15 @@ def _load_gemini_api_key_from_file():
 
     checked_text = "、".join(f"`{path}`" for path in checked_paths)
     return "", (
-        "⚠️ **Gemini 尚未啟用**：請建立 `.streamlit/secrets.toml` 並設定 "
+        "⚠️ **Gemini 尚未啟用**：請在 Hugging Face Space 的 Secret 設定 "
+        "`GEMINI_API_KEY`，或建立 `.streamlit/secrets.toml` 並設定 "
         f"`GEMINI_API_KEY`。按下 LLM 教練按鈕時才會讀取金鑰。已檢查：{checked_text}"
     )
 
 
 def get_majiang_coach_advice(hand_codes, exp_codes, discard_pool=None):
     missing_key_message = (
-        "⚠️ **Gemini 尚未啟用**：請建立 `.streamlit/secrets.toml` 並設定 `GEMINI_API_KEY`。"
+        "⚠️ **Gemini 尚未啟用**：請在 Hugging Face Space 的 Secret 設定 `GEMINI_API_KEY`。"
         "按下 LLM 教練按鈕時才會讀取金鑰。"
     )
     try:
